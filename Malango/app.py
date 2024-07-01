@@ -5,6 +5,9 @@ import speech_recognition as sr
 import ffmpeg
 from werkzeug.datastructures import FileStorage
 
+# internal
+from Malango.utils.hleper import allowed_file
+
 
 # Uploading Configuration
 UPLOAD_FOLDER = "./voices"
@@ -46,9 +49,9 @@ def voice_to_text_view():
     file: FileStorage = request.files["file"]
     lang: str | None = request.form.get("lang")
     # select language
-    language: str = "fa" if lang == "1" else "en"  
+    language: str = "fa" if lang == "1" else "en"
 
-    if file.filename == "":
+    if file.filename == "" or allowed_file(file.filename):
         return redirect(request.url)
 
     if file:
@@ -90,7 +93,6 @@ def voice_to_text_view():
                 transcript = recognizer.recognize_google(
                     data, key=None, language=language
                 )
-            
 
             except sr.UnknownValueError as e:
                 print(str(e))
