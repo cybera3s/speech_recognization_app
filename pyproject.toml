@@ -30,6 +30,10 @@ ffmpeg-python = "^0.2.0"
 black = "^24.4.2"
 flake8 = "^7.1.0"
 
+
+[tool.poetry.group.web.dependencies]
+environs = "^11.0.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
