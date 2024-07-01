@@ -1,9 +1,11 @@
+from crypt import methods
 from pathlib import Path
 import os
 from datetime import datetime
 from flask import Flask, render_template, redirect, request
 import speech_recognition as sr
 import http
+import ffmpeg
 
 
 # Uploading Configuration
@@ -15,70 +17,102 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1000 * 1000  # 5 MB
 
 
-@app.route("/", methods=["GET", "POST"])
-def index():
+import ffmpeg
+
+
+def convert_to(input, output) -> bool:
+    """
+    Converts input file to provided output format
+
+    Return:
+        True if has no err else False
+    """
+
+    stream = ffmpeg.input(input)
+    stream = ffmpeg.output(stream, output)
+    out, err = ffmpeg.run(stream)
+
+    if not err:
+        return True
+    return False
+
+
+@app.route("/", methods=["POST"])
+def handle_voice_to_text():
     """Index Page View"""
 
     transcript = ""
 
-    if request.method == "POST":
-        if "file" not in request.files:
-            return redirect(request.url)
+    # Handle POST Request
+    if "file" not in request.files:
+        return redirect(request.url)
 
-        # get data from request
-        file = request.files["file"]
-        lang = request.form.get("lang")
-        language = "en" if lang == "1" else "fa"  # select language
+    # get data from request
+    file = request.files["file"]
+    lang = request.form.get("lang")
+    language = "fa" if lang == "1" else "en"  # select language
 
-        if file.filename == "":
-            return redirect(request.url)
+    if file.filename == "":
+        return redirect(request.url)
 
-        if file:
-            # Create mp3 and wav path
-            filename = "voice_" + datetime.now().isoformat()
-            mp3_file_full_path = Path(app.config["UPLOAD_FOLDER"]).joinpath(
-                filename + ".mp3"
-            )
-            wav_file_full_path = Path(app.config["UPLOAD_FOLDER"]).joinpath(
-                filename + ".wav"
-            )
+    if file:
+        # Create mp3 and wav path
+        filename = "voice_" + datetime.now().isoformat()
 
-            file.save(mp3_file_full_path)
+        # Create upload folder
+        if not Path(app.config["UPLOAD_FOLDER"]).exists():
+            upload_folder = Path(app.config["UPLOAD_FOLDER"])
+            upload_folder.mkdir(exist_ok=True, parents=True)
 
-            if Path(mp3_file_full_path).is_file():
+        mp3_file_full_path: Path = Path(app.config["UPLOAD_FOLDER"]).joinpath(
+            filename + ".mp3"
+        )
+        wav_file_full_path: Path = Path(app.config["UPLOAD_FOLDER"]).joinpath(
+            filename + ".wav"
+        )
 
-                # convert to wav file using ffmpeg tool
-                commandwav = f"ffmpeg -i {mp3_file_full_path} {wav_file_full_path}"
-                os.system(commandwav)  # run command
+        # Saving file
+        file.save(mp3_file_full_path)
 
-                # Recognizing Voice
-                recognizer = sr.Recognizer()
-                audioFile = sr.AudioFile(str(wav_file_full_path))
+        if Path(mp3_file_full_path).is_file():
 
-                with audioFile as source:
-                    data = recognizer.record(source)
+            # convert to wav file using ffmpeg tool
+            convert_to(str(mp3_file_full_path), str(wav_file_full_path))
 
-                # recognizing voice using Google API
-                error_message = None
+            # Recognizing Voice
+            recognizer = sr.Recognizer()
+            audioFile = sr.AudioFile(str(wav_file_full_path))
 
-                try:
-                    transcript = recognizer.recognize_google(
-                        data, key=None, language=language
-                    )
-                except Exception as e:
-                    error_message = "Something Went wrong! Try Again"
+            with audioFile as source:
+                recognizer.adjust_for_ambient_noise(source)
+                data = recognizer.record(source)
 
-                # removing audio files
-                mp3_file_full_path.unlink()
-                wav_file_full_path.unlink()
+            # recognizing voice using Google API
+            error_message = None
 
-                if error_message:
-                    return {"message": error_message}, 400
+            try:
+                transcript = recognizer.recognize_google(
+                    data, key=None, language=language
+                )
+            except Exception as e:
+                error_message = "مشکلی پیش آمد، دوباره تلاش کنید"
 
-                return {"data": transcript}
+            # removing audio files
+            mp3_file_full_path.unlink()
+            wav_file_full_path.unlink()
 
-    # Handle Get Request
-    return render_template("index.html")
+            if error_message:
+                return {"message": error_message}, 400
+
+            return {"data": transcript}
+
+
+@app.route("/", methods=["GET"])
+def index():
+    context = {
+        "app_title": "ملنگو",
+    }
+    return render_template("index.html", **context)
 
 
 if __name__ == "__main__":
