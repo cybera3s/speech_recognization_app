@@ -2,11 +2,13 @@ const recordBtn = document.getElementById("record");
 const stopBtn = document.getElementById("stop");
 const soundClips = document.querySelector(".sound-clips");
 const text = document.getElementById("text");
+const transcribedTextElement = document.getElementById("transcribedText");
 const sendBtn = document.getElementById("send");
 const lang = document.getElementById("lang");
 const recordState = document.getElementById("recordState");
 const INDEX_URL = "http://127.0.0.1:5000";
-
+const shareVoiceFileId = "share_voice_file";
+const copyToClipboardElement = document.getElementById("copyToClipboard");
 /**
  * Check if browser supports getUserMedia
  * @returns true or false
@@ -77,14 +79,14 @@ checkBrowserSupport()
     sendBtn.addEventListener("click", (event) => {
       // There is no audio file yet
       if (!blob) {
-        text.innerHTML = "No audio Provided!";
+        transcribedTextElement.innerHTML = "فایل صوتی در دسترس نیست!";
         return;
       }
 
-      event.target.innerHTML = "Sent!";
+      event.target.innerHTML = "ارسال شد!";
       event.target.classList = "btn btn-success w-100 mt-4";
 
-      text.innerHTML = "Recognizing Voice...";
+      transcribedTextElement.innerHTML = "در حال شناسایی صوت...";
       var data = new FormData();
       data.append("file", blob);
       data.append("lang", lang.value);
@@ -97,7 +99,6 @@ checkBrowserSupport()
         .then((response) => {
           console.log(response);
           RestartSendBtn();
-
           if (response.status === 400) {
             throw new Error("Something went wrong, try again!");
           }
@@ -106,13 +107,21 @@ checkBrowserSupport()
         })
         .then((data) => {
           console.log(data);
-          text.innerHTML = data.data;
+          transcribedTextElement.innerHTML = data.data;
+
+          // restart copy to clipboard elem
+          copyToClipboardElement.classList = "bi bi-copy"
+
         })
         .catch((err) => {
           console.log(err);
-          text.innerHTML = err.message;
+          transcribedTextElement.innerHTML = err.message;
+          // restart copy to clipboard elem
+          copyToClipboardElement.classList = "bi bi-copy"
+
           RestartSendBtn();
         });
+
     });
   })
   // Error callback
@@ -130,7 +139,7 @@ function startRecording(event) {
   this.style.padding = "5px";
   this.style.borderRadius = "5px";
   this.style.color = "black";
-  recordState.innerHTML = "Recording...";
+  recordState.innerHTML = "در حال صبط...";
 }
 
 /**
@@ -141,10 +150,81 @@ function stopRecording(event) {
   console.log(this.mr.state);
   recordBtn.style.background = "";
   recordBtn.style.color = "";
-  recordState.innerHTML = "Stoped!";
+  recordState.innerHTML = "توقف!";
 }
 
 function RestartSendBtn() {
-  sendBtn.innerHTML = "Send Voice";
+  sendBtn.innerHTML = "ارسال صوت";
   sendBtn.classList = "btn btn-primary w-100 mt-4";
+}
+
+
+const VoiceFileInput = document.getElementById(shareVoiceFileId);
+
+VoiceFileInput.addEventListener("click", (e) => {
+  console.log("Shared");
+  console.log(VoiceFileInput.files);
+
+  const clipContainer = document.createElement("article");
+  const audio = document.createElement("audio");
+})
+
+
+async function uploadFile() {
+  let formData = new FormData();
+  const language = document.getElementById("lang");
+
+  formData.append("file", VoiceFileInput.files[0]);
+  formData.append("lang", language.value);
+
+  await fetch(INDEX_URL, {
+    method: "POST",
+    body: formData
+  })
+    .then((response) => {
+      console.log(response);
+      RestartSendBtn();
+
+      if (response.status === 400) {
+        throw new Error("خطایی رخ داده لطفا دوباره تلاش کنید");
+      }
+
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data);
+      transcribedTextElement.innerHTML = data.data;
+
+      // restart copy to clipboard elem
+      copyToClipboardElement.classList = "bi bi-copy"
+
+    })
+    .catch((err) => {
+      console.log(err);
+      transcribedTextElement.innerHTML = err.message;
+
+      // restart copy to clipboard elem
+      copyToClipboardElement.classList = "bi bi-copy"
+
+      RestartSendBtn();
+    });
+  alert('The file has been uploaded successfully.');
+}
+
+
+
+function copyToClipboard(elem) {
+  // Get the text field
+  var copyText = document.getElementById("transcribedText");
+
+  // Copy the text inside the text field
+  navigator.clipboard.writeText(copyText.innerText);
+
+
+  elem.classList = "bi bi-check-all"
+
+  setTimeout(() => {
+    elem.classList = "bi bi-copy";
+  }, 5000);
+
 }
