@@ -1,10 +1,7 @@
-from crypt import methods
 from pathlib import Path
-import os
 from datetime import datetime
 from flask import Flask, render_template, redirect, request
 import speech_recognition as sr
-import http
 import ffmpeg
 
 
