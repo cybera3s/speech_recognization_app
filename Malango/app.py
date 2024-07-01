@@ -3,18 +3,16 @@ from datetime import datetime
 from flask import Flask, render_template, redirect, request
 import speech_recognition as sr
 import ffmpeg
+from werkzeug.datastructures import FileStorage
 
 
 # Uploading Configuration
 UPLOAD_FOLDER = "./voices"
-ALLOWED_EXTENSIONS = {"wav"}
+ALLOWED_EXTENSIONS: set[str] = {"wav", "mp3", "ogg"}
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1000 * 1000  # 5 MB
-
-
-import ffmpeg
 
 
 def convert_to(input, output) -> bool:
@@ -35,26 +33,27 @@ def convert_to(input, output) -> bool:
 
 
 @app.route("/", methods=["POST"])
-def handle_voice_to_text():
-    """Index Page View"""
+def voice_to_text_view():
+    """Handle POST request to turn audio to text"""
 
-    transcript = ""
+    transcript: str = ""
 
     # Handle POST Request
     if "file" not in request.files:
         return redirect(request.url)
 
     # get data from request
-    file = request.files["file"]
-    lang = request.form.get("lang")
-    language = "fa" if lang == "1" else "en"  # select language
+    file: FileStorage = request.files["file"]
+    lang: str | None = request.form.get("lang")
+    # select language
+    language: str = "fa" if lang == "1" else "en"  
 
     if file.filename == "":
         return redirect(request.url)
 
     if file:
         # Create mp3 and wav path
-        filename = "voice_" + datetime.now().isoformat()
+        filename: str = "voice_" + datetime.now().isoformat()
 
         # Create upload folder
         if not Path(app.config["UPLOAD_FOLDER"]).exists():
@@ -77,8 +76,8 @@ def handle_voice_to_text():
             convert_to(str(mp3_file_full_path), str(wav_file_full_path))
 
             # Recognizing Voice
-            recognizer = sr.Recognizer()
-            audioFile = sr.AudioFile(str(wav_file_full_path))
+            recognizer: sr.Recognizer = sr.Recognizer()
+            audioFile: sr.AudioFile = sr.AudioFile(str(wav_file_full_path))
 
             with audioFile as source:
                 recognizer.adjust_for_ambient_noise(source)
@@ -91,7 +90,18 @@ def handle_voice_to_text():
                 transcript = recognizer.recognize_google(
                     data, key=None, language=language
                 )
+            
+
+            except sr.UnknownValueError as e:
+                print(str(e))
+                error_message: str = "مشکلی در تبدیل صوت بوجود امد"
+
+            except sr.RequestError as e:
+                print(str(e))
+                error_message: str = "صوت دریافتی نامفهوم است"
+
             except Exception as e:
+                print(str(e))
                 error_message = "مشکلی پیش آمد، دوباره تلاش کنید"
 
             # removing audio files

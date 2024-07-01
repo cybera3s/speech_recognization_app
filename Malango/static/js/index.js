@@ -99,6 +99,7 @@ checkBrowserSupport()
         .then((response) => {
           console.log(response);
           RestartSendBtn();
+
           if (response.status === 400) {
             throw new Error("Something went wrong, try again!");
           }
@@ -186,6 +187,7 @@ async function uploadFile() {
       RestartSendBtn();
 
       if (response.status === 400) {
+        console.log(response.json())
         throw new Error("خطایی رخ داده لطفا دوباره تلاش کنید");
       }
 
@@ -208,7 +210,9 @@ async function uploadFile() {
 
       RestartSendBtn();
     });
+
   alert('The file has been uploaded successfully.');
+  
 }
 
 
