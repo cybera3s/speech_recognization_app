@@ -1,4 +1,4 @@
-from Malango.config.settings import ALLOWED_EXTENSIONS
+from config.settings import ALLOWED_EXTENSIONS
 
 
 def allowed_file(filename: str) -> bool:
