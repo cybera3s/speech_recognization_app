@@ -209,8 +209,6 @@ function RestartSendBtn() {
 const VoiceFileInput = document.getElementById(shareVoiceFileId);
 
 VoiceFileInput.addEventListener("click", (e) => {
-  console.log("Shared");
-  console.log(VoiceFileInput.files);
 
   const clipContainer = document.createElement("article");
   const audio = document.createElement("audio");
@@ -222,7 +220,8 @@ async function uploadFile(sendButton) {
 
   let formData = new FormData();
   const language = document.getElementById("lang");
-
+  const VoiceFileInput = document.getElementById(shareVoiceFileId);
+  
   formData.append("file", VoiceFileInput.files[0]);
   formData.append("lang", language.value);
   let mode = "";
