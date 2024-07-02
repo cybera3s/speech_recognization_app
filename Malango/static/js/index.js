@@ -11,6 +11,22 @@ const shareVoiceFileId = "share_voice_file";
 const copyToClipboardElement = document.getElementById("copyToClipboard");
 
 
+function getLocalStream() {
+  navigator.mediaDevices
+    .getUserMedia({ video: false, audio: true })
+    .then((stream) => {
+      window.localStream = stream; // A
+      window.localAudio.srcObject = stream; // B
+      window.localAudio.autoplay = true; // C
+    })
+    .catch((err) => {
+      console.error(`you got an error: ${err}`);
+    });
+}
+
+getLocalStream();
+
+
 /**
  * Check if browser supports getUserMedia
  * @returns true or false
