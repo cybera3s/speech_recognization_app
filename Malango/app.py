@@ -23,7 +23,7 @@ app.config["MAX_CONTENT_LENGTH"] = 5 * 1000 * 1000  # 5 MB
 
 
 # Create upload folder
-create_upload_folder_if_not()
+create_upload_folder_if_not(app)
 
 
 @app.route("/", methods=["POST"])
