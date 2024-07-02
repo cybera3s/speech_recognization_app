@@ -37,7 +37,7 @@ checkBrowserSupport()
     const mediaRecorder = new MediaRecorder(stream, options);
 
     // Start Recording
-    recordBtn.addEventListener("click", startRecording);
+    recordBtn.addEventListener("mousedown", startRecording);
     recordBtn.mr = mediaRecorder;
 
     // Save data in a list
@@ -48,8 +48,8 @@ checkBrowserSupport()
     };
 
     // Stop recording
-    stopBtn.addEventListener("click", stopRecording);
-    stopBtn.mr = mediaRecorder;
+    recordBtn.addEventListener("mouseup", stopRecording);
+    recordBtn.mr = mediaRecorder;
 
     let blob;
 
@@ -89,7 +89,7 @@ checkBrowserSupport()
       event.target.innerHTML = "ارسال شد!";
       event.target.classList = "btn btn-success w-100 mt-4";
 
-      transcribedTextElement.innerHTML = "در حال شناسایی صوت...";
+      transcribedTextElement.innerHTML = "در حال شناسایی متن صوت...";
       var data = new FormData();
       data.append("file", blob);
       data.append("lang", lang.value);
@@ -135,7 +135,7 @@ checkBrowserSupport()
             transcribedTextElement.innerHTML = data.data;
 
             // restart copy to clipboard elem
-            copyToClipboardElement.classList = "bi bi-copy";
+            copyToClipboardElement.classList = "bi bi-copy d-block";
           }
 
         })
@@ -197,6 +197,8 @@ VoiceFileInput.addEventListener("click", (e) => {
 
 
 async function uploadFile(sendButton) {
+  transcribedTextElement.innerHTML = "لطفا برای آپلود فایل صبر کنید...";
+
   let formData = new FormData();
   const language = document.getElementById("lang");
 
@@ -243,7 +245,7 @@ async function uploadFile(sendButton) {
         transcribedTextElement.innerHTML = data.data;
 
         // restart copy to clipboard elem
-        copyToClipboardElement.classList = "bi bi-copy"
+        copyToClipboardElement.classList = "bi bi-copy d-block"
       }
 
 
