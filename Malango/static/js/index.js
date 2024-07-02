@@ -9,6 +9,8 @@ const recordState = document.getElementById("recordState");
 const INDEX_URL = "http://127.0.0.1:5000";
 const shareVoiceFileId = "share_voice_file";
 const copyToClipboardElement = document.getElementById("copyToClipboard");
+
+
 /**
  * Check if browser supports getUserMedia
  * @returns true or false
@@ -23,6 +25,7 @@ const checkBrowserSupport = () => {
     return navigator.mediaDevices.getUserMedia({ audio: true });
   }
 };
+
 
 checkBrowserSupport()
   .then((stream) => {
@@ -92,16 +95,22 @@ checkBrowserSupport()
       data.append("lang", lang.value);
 
       ///////////////////////////// Sending POST request /////////////////////////////
+      var err_message = "";
+
       fetch(INDEX_URL, {
         method: "POST",
         body: data,
       })
         .then((response) => {
-          console.log(response);
+
           RestartSendBtn();
 
           if (response.status === 400) {
-            throw new Error("Something went wrong, try again!");
+            return response.json().then(data => {
+              err_message = data.message;
+              throw new Error(err_message);
+            })
+
           }
 
           return response.json();
@@ -140,7 +149,7 @@ function startRecording(event) {
   this.style.padding = "5px";
   this.style.borderRadius = "5px";
   this.style.color = "black";
-  recordState.innerHTML = "در حال صبط...";
+  recordState.innerHTML = "در حال ضبط...";
 }
 
 /**
@@ -171,7 +180,7 @@ VoiceFileInput.addEventListener("click", (e) => {
 })
 
 
-async function uploadFile() {
+async function uploadFile(sendButton) {
   let formData = new FormData();
   const language = document.getElementById("lang");
 
@@ -183,12 +192,13 @@ async function uploadFile() {
     body: formData
   })
     .then((response) => {
-      console.log(response);
       RestartSendBtn();
 
       if (response.status === 400) {
-        console.log(response.json())
-        throw new Error("خطایی رخ داده لطفا دوباره تلاش کنید");
+        return response.json().then(data => {
+          throw new Error(data.message);
+        })
+
       }
 
       return response.json();
@@ -211,8 +221,18 @@ async function uploadFile() {
       RestartSendBtn();
     });
 
-  alert('The file has been uploaded successfully.');
-  
+
+  oldClassList = sendButton.classList
+  oldText = sendButton.innerText;
+
+  sendButton.classList = "btn btn-success w-100 mt-4";
+  sendButton.innerText = "با موفقیت اپلود شد";
+
+  setTimeout(() => {
+    sendButton.classList = oldClassList;
+    sendButton.innerText = oldText;
+  }, 5000);
+
 }
 
 
