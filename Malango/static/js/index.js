@@ -6,7 +6,7 @@ const transcribedTextElement = document.getElementById("transcribedText");
 const sendBtn = document.getElementById("send");
 const lang = document.getElementById("lang");
 const recordState = document.getElementById("recordState");
-const INDEX_URL = "http://127.0.0.1:5000";
+const INDEX_URL = "http://127.0.0.1:5555";
 const shareVoiceFileId = "share_voice_file";
 const copyToClipboardElement = document.getElementById("copyToClipboard");
 
@@ -221,7 +221,7 @@ async function uploadFile(sendButton) {
   let formData = new FormData();
   const language = document.getElementById("lang");
   const VoiceFileInput = document.getElementById(shareVoiceFileId);
-  
+
   formData.append("file", VoiceFileInput.files[0]);
   formData.append("lang", language.value);
   let mode = "";
