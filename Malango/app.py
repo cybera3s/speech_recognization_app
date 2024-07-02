@@ -1,17 +1,17 @@
 from pathlib import Path
 from datetime import datetime
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, jsonify
 import speech_recognition as sr
 import ffmpeg
 from werkzeug.datastructures import FileStorage
 
 # internal
-from Malango.utils.hleper import allowed_file
+from utils.hleper import allowed_file
 
 
 # Uploading Configuration
 UPLOAD_FOLDER = "./voices"
-ALLOWED_EXTENSIONS: set[str] = {"wav", "mp3", "ogg"}
+
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -51,8 +51,11 @@ def voice_to_text_view():
     # select language
     language: str = "fa" if lang == "1" else "en"
 
-    if file.filename == "" or allowed_file(file.filename):
+    if file.filename == "":
         return redirect(request.url)
+
+    if file.filename != "blob" and not allowed_file(file.filename):
+        return jsonify(message="فرمت فایل نامعتبر است"), 400
 
     if file:
         # Create mp3 and wav path
