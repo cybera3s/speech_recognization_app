@@ -1,12 +1,16 @@
 from pathlib import Path
 from datetime import datetime
 from flask import Flask, render_template, redirect, request, jsonify
-import speech_recognition as sr
-import ffmpeg
 from werkzeug.datastructures import FileStorage
 
 # internal
-from utils.hleper import allowed_file
+from utils.hleper import (
+    allowed_file,
+    create_upload_folder_if_not,
+    convert_to,
+    turn_voice_to_text,
+    VoiceToTextError,
+)
 
 
 # Uploading Configuration
@@ -17,73 +21,9 @@ app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1000 * 1000  # 5 MB
 
-def create_upload_folder_if_not() -> Path | None:
-    if not Path(app.config["UPLOAD_FOLDER"]).exists():
-        upload_folder = Path(app.config["UPLOAD_FOLDER"])
-        upload_folder.mkdir(exist_ok=True, parents=True)
-        return upload_folder
-    
+
 # Create upload folder
 create_upload_folder_if_not()
-
-def convert_to(input, output) -> bool:
-    """
-    Converts input file to provided output format
-
-    Return:
-        True if has no err else False
-    """
-
-    stream = ffmpeg.input(input)
-    stream = ffmpeg.output(stream, output)
-    out, err = ffmpeg.run(stream)
-
-    if not err:
-        return True
-    return False
-
-
-class VoiceToTextException(Exception):
-    pass
-
-
-def turn_voice_to_text(language: str, wav_file_full_path: Path) -> str:
-    """
-    Returns text of provided wav file 
-
-    Raise VoiceToTextException if anything went wrong
-    """
-
-    # Recognizing Voice
-    recognizer: sr.Recognizer = sr.Recognizer()
-    audioFile: sr.AudioFile = sr.AudioFile(str(wav_file_full_path))
-
-    with audioFile as source:
-        recognizer.adjust_for_ambient_noise(source)
-        data: sr.AudioData = recognizer.record(source)
-
-    # recognizing voice using Google API
-    try:
-        transcript = recognizer.recognize_google(
-            data, key=None, language=language
-        )
-        return transcript
-
-    except sr.UnknownValueError as e:
-
-        print(str(e))
-        raise VoiceToTextException("مشکلی در تبدیل صوت بوجود امد")
-    
-    except sr.RequestError as e:
-        print(str(e))
-        raise VoiceToTextException("صوت دریافتی نامفهوم است")
-
-    except Exception as e:
-        print(str(e))
-        raise VoiceToTextException("مشکلی پیش آمد، دوباره تلاش کنید")
-
-
-
 
 
 @app.route("/", methods=["POST"])
@@ -128,7 +68,7 @@ def voice_to_text_view():
         # Recognizing Voice
         try:
             transcript = turn_voice_to_text(language, wav_file_full_path)
-        except VoiceToTextException as e:
+        except VoiceToTextError as e:
             error_message = str(e)
 
         # removing audio files
