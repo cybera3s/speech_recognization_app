@@ -1,6 +1,14 @@
 from pathlib import Path
 from datetime import datetime
-from flask import Flask, render_template, redirect, request, jsonify
+from flask import (
+    Flask,
+    render_template,
+    redirect,
+    request,
+    jsonify,
+    send_file,
+    Response,
+)
 from werkzeug.datastructures import FileStorage
 
 # internal
@@ -78,6 +86,14 @@ def voice_to_text_view():
         if error_message:
             return {"message": error_message}, 400
         else:
+            if len(transcript) > 100:
+
+                def generate():
+                    for data in transcript:
+                        yield data
+
+                return generate(), {"Content-Type": "text/plain"}
+
             return {"data": transcript}, 200
 
 

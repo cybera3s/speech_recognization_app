@@ -96,6 +96,7 @@ checkBrowserSupport()
 
       ///////////////////////////// Sending POST request /////////////////////////////
       var err_message = "";
+      let mode = "";
 
       fetch(INDEX_URL, {
         method: "POST",
@@ -113,14 +114,29 @@ checkBrowserSupport()
 
           }
 
-          return response.json();
+          if (response.headers.get("Content-Type") === "text/plain") {
+            mode = "file";
+            response.blob().then(blob => {
+              download(blob, "transcribed_file.txt");
+              return;
+            })
+          } else {
+            return response.json();
+          }
+
         })
         .then((data) => {
-          console.log(data);
-          transcribedTextElement.innerHTML = data.data;
 
-          // restart copy to clipboard elem
-          copyToClipboardElement.classList = "bi bi-copy"
+          if (mode === "file") {
+            transcribedTextElement.innerHTML = "صوت شما تبدیل به فایل شد";
+            copyToClipboardElement.remove();
+
+          } else {
+            transcribedTextElement.innerHTML = data.data;
+
+            // restart copy to clipboard elem
+            copyToClipboardElement.classList = "bi bi-copy";
+          }
 
         })
         .catch((err) => {
@@ -186,12 +202,15 @@ async function uploadFile(sendButton) {
 
   formData.append("file", VoiceFileInput.files[0]);
   formData.append("lang", language.value);
+  let mode = "";
 
   await fetch(INDEX_URL, {
     method: "POST",
     body: formData
   })
     .then((response) => {
+      console.log(response)
+
       RestartSendBtn();
 
       if (response.status === 400) {
@@ -201,14 +220,32 @@ async function uploadFile(sendButton) {
 
       }
 
-      return response.json();
+      if (response.headers.get("Content-Type") === "text/plain") {
+        mode = "file";
+        response.blob().then(blob => {
+          download(blob, "transcribed_file.txt");
+          return;
+        })
+      } else {
+        return response.json();
+      }
+
+
     })
     .then((data) => {
       console.log(data);
-      transcribedTextElement.innerHTML = data.data;
 
-      // restart copy to clipboard elem
-      copyToClipboardElement.classList = "bi bi-copy"
+      if (mode === "file") {
+        transcribedTextElement.innerHTML = "صوت شما تبدیل به فایل شد";
+        copyToClipboardElement.remove();
+
+      } else {
+        transcribedTextElement.innerHTML = data.data;
+
+        // restart copy to clipboard elem
+        copyToClipboardElement.classList = "bi bi-copy"
+      }
+
 
     })
     .catch((err) => {
@@ -222,7 +259,7 @@ async function uploadFile(sendButton) {
     });
 
 
-  oldClassList = sendButton.classList
+  oldClassList = "btn btn-primary w-100 mt-4";
   oldText = sendButton.innerText;
 
   sendButton.classList = "btn btn-success w-100 mt-4";
@@ -231,7 +268,7 @@ async function uploadFile(sendButton) {
   setTimeout(() => {
     sendButton.classList = oldClassList;
     sendButton.innerText = oldText;
-  }, 5000);
+  }, 2000);
 
 }
 
