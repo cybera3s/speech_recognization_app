@@ -2,8 +2,8 @@ from environs import Env
 from pathlib import Path
 
 
-env = Env(Path(__file__).parent / ".env")
-env.read_env()  # read .env file, if it exists
+env = Env()
+env.read_env(path=(Path(__file__).parent / ".env").resolve())  # read .env file, if it exists
 # required variables
 
 APP_NAME = env.str("APP_NAME")
