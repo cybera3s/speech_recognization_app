@@ -76,6 +76,11 @@ checkBrowserSupport()
       chunks = [];
       const audioURL = window.URL.createObjectURL(blob);
       audio.src = audioURL;
+
+      if ($(sendBtn).hasClass("d-none")) {
+        $(sendBtn).removeClass("d-none");
+      }
+
     };
 
     ///////////////////////////// Click Send Button event /////////////////////////////
@@ -288,6 +293,6 @@ function copyToClipboard(elem) {
 
   setTimeout(() => {
     elem.classList = "bi bi-copy";
-  }, 5000);
+  }, 2000);
 
 }

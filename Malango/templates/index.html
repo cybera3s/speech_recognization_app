@@ -8,13 +8,13 @@
 <div class="container-fluid">
     <div class="p-3 row justify-content-center">
 
-        <div class="col-12 col-sm-10 col-md-8 col-lg-4 text-center mb-2">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-3 text-center border p-4">
 
 
             <!-- Choose voice language -->
             <div id="langueage">
                 <label for="lang" class="form-label text-left">انتخاب زبان صوت</label>
-                <select class="form-select form-select-lg mb-3" name="lang" id="lang">
+                <select class="form-select form-select-lg mb-1" name="lang" id="lang">
                     <option value="1" selected>فارسی</option>
                     <option value="2">انگلیسی</option>
                 </select>
@@ -45,15 +45,15 @@
                         <!-- State of Recording -->
                         <div id="recordState" class="my-2 border p-3">آماده</div>
 
-                        <img src="{{ url_for('static', filename='img/microphone.svg') }}" width="150"
+                        <img src="{{ url_for('static', filename='img/microphone.svg') }}" width="150" height="100"
                             alt="microphone_recording" id="record" title="Record..." class="record" />
 
                     </div>
 
-                    <div class="sound-clips mt-4"></div>
+                    <div class="sound-clips mt-1"></div>
 
                     <!-- Send voice Button -->
-                    <button class="btn btn-primary w-100 mt-1" id="send">ارسال</button>
+                    <button class="btn btn-primary w-100 mt-1 d-none" id="send">ارسال</button>
 
                 </div>
 
@@ -75,7 +75,7 @@
 
         </div>
 
-        <div id="text" class="col-12 col-sm-10 col-md-8 col-lg-4 p-4 fw-bold border text-center shadow">
+        <div id="text" class="col-12 col-sm-10 col-md-8 col-lg-3 p-4 fw-bold border text-center">
             <p id="transcribedText"></p>
 
             <!-- The button used to copy the text -->
