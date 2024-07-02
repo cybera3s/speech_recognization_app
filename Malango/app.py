@@ -7,6 +7,7 @@ from flask import (
     request,
     jsonify,
 )
+from flask_cors import CORS
 from werkzeug.datastructures import FileStorage
 
 # internal
@@ -24,8 +25,13 @@ UPLOAD_FOLDER = "./voices"
 
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'the quick brown fox jumps over the lazy   dog'
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1000 * 1000  # 5 MB
+
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 # Create upload folder

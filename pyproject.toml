@@ -33,6 +33,7 @@ flake8 = "^7.1.0"
 
 [tool.poetry.group.web.dependencies]
 environs = "^11.0.0"
+flask-cors = "^4.0.1"
 
 [build-system]
 requires = ["poetry-core"]
