@@ -24,6 +24,7 @@ werkzeug = "2.2.2"
 zipp = "3.11.0"
 speechrecognition = "^3.10.0"
 ffmpeg-python = "^0.2.0"
+gunicorn = "^22.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
