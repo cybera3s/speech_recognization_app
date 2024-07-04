@@ -6,7 +6,7 @@ const transcribedTextElement = document.getElementById("transcribedText");
 const sendBtn = document.getElementById("send");
 const lang = document.getElementById("lang");
 const recordState = document.getElementById("recordState");
-const INDEX_URL = "http://127.0.0.1:5555";
+const INDEX_URL = "http://77.73.131.200:5555/";
 const shareVoiceFileId = "share_voice_file";
 const copyToClipboardElement = document.getElementById("copyToClipboard");
 
