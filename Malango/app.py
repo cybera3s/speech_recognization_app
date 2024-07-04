@@ -30,16 +30,16 @@ app.config['SECRET_KEY'] = 'the quick brown fox jumps over the lazy   dog'
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1000 * 1000  # 5 MB
 
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
-
-# Create upload folder
-create_upload_folder_if_not(app)
 
 
 @app.route("/", methods=["POST"])
 def voice_to_text_view():
     """Handle POST request to turn audio to text"""
+
+    # Create upload folder
+    create_upload_folder_if_not(app)
 
     transcript: str = ""
 
