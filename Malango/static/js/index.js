@@ -155,13 +155,13 @@ checkBrowserSupport()
 
           if (mode === "file") {
             transcribedTextElement.innerHTML = "صوت شما تبدیل به فایل شد";
-            copyToClipboardElement.remove();
+            $("#copyToClipboard").addClass("d-none");
 
           } else {
             transcribedTextElement.innerHTML = data.data;
 
             // restart copy to clipboard elem
-            copyToClipboardElement.classList = "bi bi-copy d-block";
+            $("#copyToClipboard").removeClass("d-none");
           }
 
         })
@@ -268,13 +268,14 @@ async function uploadFile(sendButton) {
 
       if (mode === "file") {
         transcribedTextElement.innerHTML = "صوت شما تبدیل به فایل شد";
-        copyToClipboardElement.remove();
+        // hide copy to clipboard button
+        $("#copyToClipboard").addClass("d-none");
 
       } else {
         transcribedTextElement.innerHTML = data.data;
 
-        // restart copy to clipboard elem
-        copyToClipboardElement.classList = "bi bi-copy d-block"
+        // show copy to clipboard button
+        $("#copyToClipboard").removeClass("d-none");
       }
 
 
@@ -308,8 +309,11 @@ function restartShareVoiceFileButtonStyle(shareVoiceFileButton) {
 
 }
 
+$("#copyToClipboard").on("click", copyToClipboard);
 
-function copyToClipboard(elem) {
+function copyToClipboard(event) {
+  let element = event.target;
+
   // Get the text field
   var copyText = document.getElementById("transcribedText");
 
@@ -317,10 +321,10 @@ function copyToClipboard(elem) {
   navigator.clipboard.writeText(copyText.innerText);
 
 
-  elem.classList = "bi bi-check-all"
+  element.classList = "bi bi-check-all"
 
   setTimeout(() => {
-    elem.classList = "bi bi-copy";
+    element.classList = "bi bi-copy";
   }, 2000);
 
 }
