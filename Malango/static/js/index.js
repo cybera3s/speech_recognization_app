@@ -6,7 +6,7 @@ const transcribedTextElement = document.getElementById("transcribedText");
 const sendBtn = document.getElementById("send");
 const lang = document.getElementById("lang");
 const recordState = document.getElementById("recordState");
-const INDEX_URL = "https://0.0.0.0:5000/";
+const INDEX_URL = "/";
 const shareVoiceFileId = "share_voice_file";
 const copyToClipboardElement = document.getElementById("copyToClipboard");
 
@@ -220,6 +220,10 @@ VoiceFileInput.addEventListener("click", (e) => {
 })
 
 
+const shareVoiceFileButton = document.getElementById("sendVoiceFile");
+shareVoiceFileButton.addEventListener("click", uploadFile);
+
+
 async function uploadFile(sendButton) {
   transcribedTextElement.innerHTML = "لطفا برای آپلود فایل صبر کنید...";
 
@@ -286,19 +290,23 @@ async function uploadFile(sendButton) {
     });
 
 
-  oldClassList = "btn btn-primary w-100 mt-4";
-  oldText = sendButton.innerText;
-
-  sendButton.classList = "btn btn-success w-100 mt-4";
-  sendButton.innerText = "با موفقیت اپلود شد";
-
-  setTimeout(() => {
-    sendButton.classList = oldClassList;
-    sendButton.innerText = oldText;
-  }, 2000);
+  restartShareVoiceFileButtonStyle(shareVoiceFileButton)
 
 }
 
+function restartShareVoiceFileButtonStyle(shareVoiceFileButton) {
+  oldClassList = "btn btn-primary w-100 mt-4";
+  oldText = shareVoiceFileButton.innerText;
+
+  shareVoiceFileButton.classList = "btn btn-success w-100 mt-4";
+  shareVoiceFileButton.innerText = "با موفقیت اپلود شد";
+
+  setTimeout(() => {
+    shareVoiceFileButton.classList = oldClassList;
+    shareVoiceFileButton.innerText = oldText;
+  }, 2000);
+
+}
 
 
 function copyToClipboard(elem) {
