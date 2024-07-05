@@ -6,7 +6,7 @@ const transcribedTextElement = document.getElementById("transcribedText");
 const sendBtn = document.getElementById("send");
 const lang = document.getElementById("lang");
 const recordState = document.getElementById("recordState");
-const INDEX_URL = "https://77.73.131.200:80/";
+const INDEX_URL = "https://0.0.0.0:5000/";
 const shareVoiceFileId = "share_voice_file";
 const copyToClipboardElement = document.getElementById("copyToClipboard");
 
@@ -24,8 +24,13 @@ function getLocalStream() {
     });
 }
 
-getLocalStream();
+// 
 
+if (window.location.protocol.startsWith("http")) {
+  console.log("MEdiaDevices permissions available only in secure contexts (HTTPS)");
+} else {
+  getLocalStream();
+}
 
 /**
  * Check if browser supports getUserMedia
