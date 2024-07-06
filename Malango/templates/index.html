@@ -4,6 +4,25 @@
 {{ app_title }}
 {% endblock %}
 
+{% block extra_style %}
+<style>
+    .record {
+        cursor: pointer;
+        transition: ease 0.5s all;
+        width: 100%;
+        height: 150px;
+        background-image: url('{{ url_for("static", filename="img/microphone.svg") }}');
+        background-position: center;
+        background-color: #fff;
+        background-repeat: no-repeat;
+    }
+
+    .record:hover {
+        transform: scale(1.06, 1.1);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
     <div class="p-3 row justify-content-center">
@@ -45,8 +64,7 @@
                         <!-- State of Recording -->
                         <div id="recordState" class="my-2 border p-3">آماده</div>
 
-                        <img src="{{ url_for('static', filename='img/microphone.svg') }}" width="150" height="100"
-                            alt="microphone_recording" id="record" title="Record..." class="record" />
+                        <div alt="microphone_recording" id="record" title="Record..." class="record text-center"></div>
 
                     </div>
 
