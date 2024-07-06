@@ -59,6 +59,7 @@ checkBrowserSupport()
 
     // Start Recording
     recordBtn.addEventListener("mousedown", startRecording);
+    recordBtn.addEventListener("touchstart", startRecording);
     recordBtn.mr = mediaRecorder;
 
     // Save data in a list
@@ -70,6 +71,7 @@ checkBrowserSupport()
 
     // Stop recording
     recordBtn.addEventListener("mouseup", stopRecording);
+    recordBtn.addEventListener("touchend", stopRecording);
     recordBtn.mr = mediaRecorder;
 
     let blob;
@@ -187,7 +189,7 @@ checkBrowserSupport()
 function startRecording(event) {
   this.mr.start();
   console.log("Recording started");
-  this.style.background = "red";
+  this.style.backgroundColor = "red";
   this.style.padding = "5px";
   this.style.borderRadius = "5px";
   this.style.color = "black";
@@ -200,7 +202,7 @@ function startRecording(event) {
 function stopRecording(event) {
   this.mr.stop();
   console.log(this.mr.state);
-  recordBtn.style.background = "";
+  recordBtn.style.backgroundColor = "#fff";
   recordBtn.style.color = "";
   recordState.innerHTML = "توقف!";
 }
