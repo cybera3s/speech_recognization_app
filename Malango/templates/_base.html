@@ -21,11 +21,6 @@
         href="{{ url_for('static', filename='bootstrap-icons-1.11.3/font/bootstrap-icons.min.css') }}">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
         @font-face {
             font-family: IranSans;
             src: url('{{ url_for("static", filename="fonts/IranianSans.ttf") }}');
@@ -41,10 +36,8 @@
 
 <body>
 
-    <div class="container-fluid m-0 p-0">
-        {% include "includes/navbar.html" %}
-        {% block content %}{% endblock %}
-    </div>
+    {% include "includes/navbar.html" %}
+    {% block content %}{% endblock %}
 
 
 
