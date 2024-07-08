@@ -58,8 +58,9 @@ checkBrowserSupport()
     const mediaRecorder = new MediaRecorder(stream, options);
 
     // Start Recording
-    recordBtn.addEventListener("mousedown", startRecording);
-    recordBtn.addEventListener("touchstart", startRecording);
+    recordBtn.addEventListener("pointerdown", startRecording);
+    // recordBtn.addEventListener("pointerdown", startRecording);
+    // recordBtn.addEventListener("touchstart", startRecording);
     recordBtn.mr = mediaRecorder;
 
     // Save data in a list
@@ -70,8 +71,9 @@ checkBrowserSupport()
     };
 
     // Stop recording
-    recordBtn.addEventListener("mouseup", stopRecording);
-    recordBtn.addEventListener("touchend", stopRecording);
+    // recordBtn.addEventListener("mouseup", stopRecording);
+    recordBtn.addEventListener("pointerup", stopRecording);
+    // recordBtn.addEventListener("touchend", stopRecording);
     recordBtn.mr = mediaRecorder;
 
     let blob;
