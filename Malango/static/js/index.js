@@ -244,7 +244,6 @@ async function uploadFile(sendButton) {
     body: formData
   })
     .then((response) => {
-      console.log(response)
 
       RestartSendBtn();
 
@@ -268,7 +267,6 @@ async function uploadFile(sendButton) {
 
     })
     .then((data) => {
-      console.log(data);
 
       if (mode === "file") {
         transcribedTextElement.innerHTML = "صوت شما تبدیل به فایل شد";
